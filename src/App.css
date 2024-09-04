@@ -1,0 +1,344 @@
+/* General */
+
+div {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Nav Bar */
+
+.navbar-nav .navbar-item .navbar-link:hover{
+  color: black;
+  background-color: #f0f0f0;
+}
+
+.navbar-nav{
+  
+  padding-right: 50px;
+}
+
+.navbar-brand{
+  padding-left: 50px;
+}
+
+@media (max-width: 800px) {
+  .navbar-brand{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+/* Container Fluid */
+
+.containerFluid{
+  background-color: #F5F5F5;
+  box-shadow: 0px 8px 10px -3px rgba(0,0,0,0.1);
+}
+
+
+.headRow{
+  
+  padding-bottom: 30px;
+}
+
+.textHeader h1{
+  font-size: 80px;
+  line-height: 80px;
+  font-weight: 600;
+}
+
+.textHeader h6{
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.textHeader a{
+  text-decoration: none;
+}
+
+.featuresSection a{
+  text-decoration: none;
+}
+
+.getStartedButton {
+  display: inline-block;
+  margin-top: 10px;
+  color: white;
+  background-color: #06402B;
+  padding: 10px;
+  text-align: center; 
+  width: 150px;
+  border-radius: 3px;
+}
+
+.getStartedButton:hover{
+  color: white;
+  background-color: #03281a;
+}
+
+@media (max-width: 768px) {
+  .textHeader h1 {
+    font-size: 60px; 
+    line-height: 60px;
+  }
+
+  .textHeader h6 {
+    font-size: 15px; 
+  }
+
+  
+}
+
+/* Features Section */
+
+.featuresRow h2{
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.featuresRow h4{
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+  width: 50px; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.featuresSection a{
+  text-decoration: none;
+}
+
+.featuresSection .getStartedButton {
+  display: inline-block;
+  margin-top: 10px;
+  color: white;
+  background-color: #06402B;
+  padding: 10px;
+  text-align: center; 
+  width: 150px;
+  height: auto;
+  border-radius: 3px;
+}
+
+.featuresSection .getStartedButton:hover{
+  color: white;
+  background-color: #03281a;
+}
+
+
+/* Templates Section */
+
+.templatesSection{
+  background-color: #06402B;
+  padding: 20px;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.3);
+  padding-bottom: 40px;
+}
+
+.templatesRow h2{
+  font-size: 30px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.templatesRow h4{
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+}
+
+.custom-carousel .carousel-control-prev-icon,
+.custom-carousel .carousel-control-next-icon {
+  border: 2px solid white;
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+}
+
+.custom-carousel .carousel-control-prev,
+.custom-carousel .carousel-control-next {
+  width: 5%;
+}
+
+
+.carousel-image {
+  width: 65%; /* Reduce the width of the images */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensure images cover the space without distortion */
+  margin: 0 auto; /* Center the image horizontally */
+  border: 1px solid #fff;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.4);
+}
+
+/* Feedback Section */
+
+.feedbackSection{
+  background-color: #F5F5F5;
+  padding: 20px;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.2);
+}
+
+
+.feedbackRow h2{
+  font-size: 30px;
+  font-weight: 600;
+  color: #000;
+}
+
+.feedbackRow h4{
+  font-size: 18px;
+  font-weight: 400;
+  color: #000;
+}
+
+.feedbacks{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+@media (max-width: 768px) {
+  .feedbacks{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+}
+
+/* Testimonial Card Styles */
+.testimonial-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 10px;
+  padding: 1.5rem;
+  background-color: #ffffff;
+}
+
+.testimonial-text {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-left: 0.8rem;
+  font-style: italic;
+}
+
+.testimonial-text .quote-icon {
+  left: 0;
+  top: 0;
+  font-size: 2rem;
+  color: #ccc;
+ 
+}
+
+.testimonial-author {
+  font-weight: bold;
+  color: #555;
+}
+
+.testimonial-stars {
+  font-size: 1.2rem;
+}
+
+/* FAQ Section */
+
+.faqSection{
+  margin-top: 70px;
+}
+
+.faqtextHeader h1{
+  font-size: 60px;
+  line-height: 60px;
+  font-weight: 600;
+}
+
+.faqtextHeader h6{
+  font-size: 18px;
+  font-weight: 400;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .faqtextHeader h1{
+    font-size: 40px;
+    line-height: 45px;
+    font-weight: 600;
+  }
+  
+  .faqtextHeader h6{
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 30px;
+  }
+
+  .faqSection{
+    margin-top: 50px;
+  }
+}
+
+/* Custom Accordion Styles */
+.custom-accordion .accordion-header {
+  background-color: #06402B; /* Change this to your desired color */
+  color: #fff;
+}
+
+.custom-accordion .accordion-body {
+  background-color: #F5F5F5; /* Change this to your desired body color */
+}
+
+.custom-accordion .accordion-button {
+  color: #fff;
+  background-color: #06402B; /* Match this with header color */
+ 
+}
+
+.custom-accordion .accordion-button:not(.collapsed) {
+  color: #fff;
+  background-color: #03281a; /* Darker shade for active state */
+}
+
+.custom-accordion .accordion-button::after {
+  filter: invert(1); /* Invert the color of the default Bootstrap icon */
+}
+
+.custom-accordion .accordion-body {
+  text-align: justify;
+  color: #333;
+} 
+
+/* Footer */
+
+footer {
+  padding-top: 20px;
+  box-shadow: 10px 0px 15px -3px rgba(0,0,0,0.2);
+}
+
+footer a {
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+footer a:hover {
+  color: #007bff;
+}
+
+footer .bg-dark {
+  margin-top: 20px;
+}
+
+.social-icon {
+  left: 0;
+  top: 0;
+  font-size: 1.5rem;
+
+}
