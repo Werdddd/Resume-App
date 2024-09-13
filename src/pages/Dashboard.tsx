@@ -28,9 +28,10 @@ function Dashboard() {
   };
 
   // Function to navigate to CreateResume.tsx
-  const handleCreateResumeClick = () => {
-    navigate('/resume');
+  const handleCreateResumeClick = (resumeId: number) => {
+    navigate('/resume', { state: { resumeId } }); 
   };
+  
 
   const handleCloseResume = () => setShowResumeModal(false);
   const handleShowResume = () => setShowResumeModal(true);
@@ -63,8 +64,10 @@ function Dashboard() {
       const data = await response.json();
       console.log('Resume added successfully:', data);
 
+      const resumeId = data.id;
+
       // Redirect to CreateResume.tsx
-      handleCreateResumeClick();
+      handleCreateResumeClick(resumeId);
     } catch (error) {
       console.error('Failed to add resume:', error);
     }

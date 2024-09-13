@@ -60,24 +60,24 @@ def api_add_resume():
     db.session.add(new_resume)
     db.session.commit()
 
-    return jsonify({
-        "id": new_resume.id,
-        "title": new_resume.title,
-        "template": new_resume.template,
-        "name": new_resume.name
-    }), 201
+    return jsonify({"id": new_resume.id}), 201
 
 
-@app.route('/api/resumes/<int:id>/update_name', methods=['PATCH'])
-def update_resume_name(id):
+@app.route('/api/resumes/<int:id>', methods=['PUT'])
+def update_resume(id):
     data = request.json
-    name = data.get('name')
+    new_name = data.get('name')
 
+    if not new_name:
+        return jsonify({"error": "Name is required to update"}), 400
+
+    # Find the resume by ID
     resume = Resume.query.get(id)
     if not resume:
         return jsonify({"error": "Resume not found"}), 404
 
-    resume.name = name
+    # Update the resume's name
+    resume.name = new_name
     db.session.commit()
 
     return jsonify({
@@ -85,8 +85,7 @@ def update_resume_name(id):
         "title": resume.title,
         "template": resume.template,
         "name": resume.name
-    })
-
+    }), 200
 
 # Route to delete a resume
 @app.route('/delete_resume/<int:id>')

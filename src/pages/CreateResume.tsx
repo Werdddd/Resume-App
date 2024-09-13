@@ -17,9 +17,19 @@ import { BsBriefcase } from "react-icons/bs";
 import { BsCodeSlash } from "react-icons/bs";
 import { BsPuzzle } from "react-icons/bs";
 import { BsFileText } from "react-icons/bs";
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import "../App.css"
 
 function CreateResume() {
+
+    const navigate = useNavigate();
+
+    const locationId = useLocation();
+  
+    const { resumeId } = locationId.state || {};
+  
+
     const [showExperienceModal, setShowExperienceModal] = useState(false);
     const [showEducationModal, setShowEducationModal] = useState(false);
     const [showSkillModal, setShowSkillModal] = useState(false);
@@ -370,28 +380,33 @@ function CreateResume() {
         setLeaderships(updatedLeaderships);
     };
 
+    const saveAllChanges = async (id: number, name: string) => {
 
-    const saveAllChanges = async () => {
+        console.log('ID:', id);
+        console.log('Name:', name);
+
         try {
-            const response = await fetch(`http://localhost:5000/api/resumes/${id}/update_name`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name: fullName }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('Resume updated successfully:', data);
+          const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: name,
+            }),
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+      
+          const data = await response.json();
+          console.log('Resume updated successfully:', data);
         } catch (error) {
-            console.error('Failed to update resume:', error);
+          console.error('Failed to update resume:', error);
         }
-    };
-
+      };
+      
     // PDF export function
     const exportToPDF = () => {
         const input = resumeRef.current;
@@ -963,7 +978,7 @@ function CreateResume() {
                         </Modal>
 
                         <hr></hr>
-                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(id, fullName)}>Save All Changes</div>
+                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName)}>Save All Changes</div>
                         <div className="exportButton py-2 mb-4" onClick={exportToPDF}>Export to PDF</div>
                     </Form>
 
