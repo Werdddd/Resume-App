@@ -7,6 +7,7 @@ import icon1 from "../assets/featureIcon.png"; // Replace with your image paths
 import icon2 from "../assets/featureIcon (3).png"; // Replace with your image paths
 import icon3 from "../assets/featureIcon (2).png"; // Replace with your image paths
 import icon4 from "../assets/featureIcon (4).png"; // Replace with your image paths
+import { Link } from 'react-router-dom';
 
 function FeaturesSection() {
   return (
@@ -65,7 +66,9 @@ function FeaturesSection() {
         
       </Row>
       <Row className="justify-content-center text-center">
-      <a className='getStartedButton'>Get Started</a> 
+      <Link to="/dashboard" className="getStartedButton">
+        Get Started
+      </Link>
       </Row>
     </Container>
   );

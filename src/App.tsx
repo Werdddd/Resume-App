@@ -1,40 +1,35 @@
 import './App.css';
 import NavBar from "./components/NavBar";
 import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import imagePath from './assets/resume-7.png';
-import ContainerFluid from './components/ContainerFluid';
-import FeaturesSection from './components/FeaturesSection';
-import TemplatesSection from './components/TemplatesSection';
-import StepsSection from './components/StepsSection';
-import FeedbackSection from './components/FeedbackSection';
-import FAQSection from './components/FAQSection';
-import Footer from './components/Footer';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CreateResume from './pages/CreateResume';
+import Dashboard from './pages/Dashboard';
+import Home from './pages/Home'; 
 
 function App() {
-
   return (
-    <div>
+    <Router>
       <NavBar
         brandName="EaseResume"
         imageSrcPath={imagePath}
         navItems={[
-          { text: "Home", href: "/" },
-          { text: "About", href: "/about" },
-          { text: "Services", href: "/services" },
-          { text: "Contact", href: "/contact" },
+          { text: "Home", href: "/home" },
+          { text: "Dashboard", href: "/dashboard" },
+          { text: "Create Resume", href: "/resume" },
         ]}
       />
-      <ContainerFluid />
-      <FeaturesSection />
-      <TemplatesSection />
-      <StepsSection />
-      <FeedbackSection />
-      <FAQSection />
-      <Footer />
-    </div>
-  )
+      <Routes>
+        <Route path="/" element={<Home />} /> {/* Set Home for the root route */}
+        <Route path="/home" element={<Home />} /> {/* Set Home for /home route */}
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/resume" element={<CreateResume />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Add more routes for other pages */}
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

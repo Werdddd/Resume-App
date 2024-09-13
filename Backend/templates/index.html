@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume List</title>
+</head>
+<body>
+
+    <h1>Resume List</h1>
+
+    <!-- Display all users -->
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Resume Title</th>
+            <th>Template</th>
+            <th>Actions</th>
+        </tr>
+        {% for resume in resumes %}
+        <tr>
+            <td>{{ resume.id }}</td>
+            <td>{{ resume.title }}</td>
+            <td>{{ resume.template }}</td>
+            <td>
+                <!-- Link to delete the user -->
+                <a href="{{ url_for('delete_user', id=resume.id) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Form to add a new user -->
+    <h2>Add a New Resume</h2>
+    <form action="{{ url_for('add_resume') }}" method="POST">
+        <label for="name">Title:</label>
+        <input type="text" name="title" required>
+        <button type="submit">Add Resume</button>
+    </form>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from 'react-router-dom'; // Import useLocation
 import "../App.css";
 
 interface NavBarProps {
@@ -8,12 +9,19 @@ interface NavBarProps {
 }
 
 function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const location = useLocation(); // Get the current location
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+
+  useEffect(() => {
+    // Determine which index should be active based on the current path
+    const currentIndex = navItems.findIndex(item => item.href === location.pathname);
+    setSelectedIndex(currentIndex);
+  }, [location.pathname, navItems]); // Update when location or navItems change
 
   return (
-    <nav className=" navbar navbar-expand-md navbar-light bg-white shadow" >
+    <nav className="navbar navbar-expand-md navbar-light bg-white shadow">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
+        <Link className="navbar-brand" to="/home"> 
           <img
             src={imageSrcPath}
             width="60"
@@ -22,7 +30,7 @@ function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
             alt=""
           />
           <span className="fw-bold fs-5">{brandName}</span>
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -43,18 +51,17 @@ function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
               <li
                 key={item.text}
                 className="nav-item"
-                onClick={() => setSelectedIndex(index)}
               >
-                <a
+                <Link
                   className={
                     selectedIndex === index
                       ? "nav-link active fw-bold"
                       : "nav-link"
                   }
-                  href={item.href}
+                  to={item.href}
                 >
                   {item.text}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

@@ -342,3 +342,171 @@ footer .bg-dark {
   font-size: 1.5rem;
 
 }
+
+/* Create Resume Page */
+
+.createResumePage{
+  box-shadow: 0px 8px 10px -3px rgba(0,0,0,0.1);
+}
+
+.addItem{
+  cursor: pointer;
+  border: 1px solid #6e6d6d;
+  background-color: transparent;
+  color: #555;
+  text-align: center;
+  width: 100%;
+  box-shadow: '0 2px 4px rgba(0,0,0,0.4)';
+}
+
+.exportButton{
+  cursor: pointer;
+  border: 1px solid #6e6d6d;
+  background-color: #06402B;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  box-shadow: '0 2px 4px rgba(0,0,0,0.4)';
+}
+
+.exportButton:hover{
+  background-color: #03281a;
+}
+
+.editDelItem{
+  cursor: pointer;
+  border: 1px solid #6e6d6d;
+  background-color: transparent;
+  color: #555;
+  text-align: center;
+  width: 50%;
+  box-shadow: '0 2px 4px rgba(0,0,0,0.4)';
+  font-size: 16px;
+}
+
+.createItem{
+  cursor: pointer;
+  border: 1px solid #555;
+  background-color: transparent;
+  color: #555;
+  text-align: center;
+  width: 30%;
+  box-shadow: '0 2px 4px rgba(0,0,0,0.2)';
+}
+
+.heading{
+  font-weight: 600;
+}
+
+.profilePhoto {
+  box-shadow: '0 4px 4px rgba(0,0,0,0.5)';
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.resumeDisplay{
+  box-shadow: 0px 3px 15px 6px rgba(0,0,0,0.1);
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* Dashboard */
+
+
+.dashboard {
+  height: 100vh;
+}
+
+.dashrow {
+  height: 100%;
+}
+
+.dashboardrow{
+  padding-top: 5px;
+}
+
+.accountCol {
+  background-color: #F5F5F5; /* Light background for the sidebar */
+  height: 100%;
+  padding-top: 10px;
+  box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.1); /* Right-side box shadow */
+}
+
+.sidebar-item {
+  color: #333;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Adding box shadow */
+  transition: box-shadow 0.3s ease;
+}
+
+.sidebar-item:hover {
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.sidebar-item.active {
+  background-color: #e3e3e3; /* Active color for the selected item */
+}
+
+.sidebar-header {
+  font-weight: bold;
+}
+
+.dashboardCol {
+  background-color: #fff;
+  padding: 20px;
+}
+
+.subtitle {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: auto;
+  color: #333;
+}
+
+.resumetitle {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: auto;
+  color: #333;
+}
+
+.vertical-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  height: 300px; 
+  width: 100%;
+}
+
+.vertical-card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.icon-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-icon {
+  font-size: 48px;
+}
+
+@media (max-width: 768px) {
+  .dashboard{
+    height: 47vh;
+  }
+}
