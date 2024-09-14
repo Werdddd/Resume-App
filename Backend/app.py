@@ -5,9 +5,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app) 
 
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+
 # Configure MySQL Database Connection
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/resumes_db'  # Adjust to your database name and credentials
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
@@ -18,11 +22,13 @@ class Resume(db.Model):
     title = db.Column(db.String(100), nullable=False)
     template = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=True)
+    headline = db.Column(db.String(300), nullable=True)
 
-    def __init__(self, title, template, name=None):
+    def __init__(self, title, template, name=None, headline=None):
         self.title = title
         self.template = template
         self.name = name
+        self.headline = headline
 
 # Create the database and table if it doesn’t exist
 with app.app_context():
@@ -34,6 +40,7 @@ def index():
     resumes = Resume.query.all()  # Fetch all resumes from the database
     return render_template('index.html', resumes=resumes)
 
+# Deprecated
 # Route to add a new resume via POST (HTML form)
 @app.route('/add_resume', methods=['POST'])
 def add_resume():
@@ -51,42 +58,44 @@ def api_add_resume():
     data = request.json
     title = data.get('title')
     template = data.get('template')
-    name = data.get('name')  # This will be None initially
 
     if not title or not template:
         return jsonify({"error": "Title and template are required"}), 400
 
-    new_resume = Resume(title=title, template=template, name=name)
+    new_resume = Resume(title=title, template=template)
     db.session.add(new_resume)
     db.session.commit()
 
-    return jsonify({
-        "id": new_resume.id,
-        "title": new_resume.title,
-        "template": new_resume.template,
-        "name": new_resume.name
-    }), 201
+    return jsonify({"id": new_resume.id}), 201
 
 
-@app.route('/api/resumes/<int:id>/update_name', methods=['PATCH'])
-def update_resume_name(id):
+@app.route('/api/resumes/<int:id>', methods=['PUT'])
+def update_resume(id):
     data = request.json
     name = data.get('name')
+    headline = data.get('headline')
 
+    if not name:
+        return jsonify({"error": "Name is required to update"}), 400
+
+    # Find the resume by ID
     resume = Resume.query.get(id)
     if not resume:
         return jsonify({"error": "Resume not found"}), 404
 
+    # Update the resume's name
     resume.name = name
+    resume.headline = headline
+
     db.session.commit()
 
     return jsonify({
         "id": resume.id,
         "title": resume.title,
         "template": resume.template,
+        "headline": resume.headline,
         "name": resume.name
-    })
-
+    }), 200
 
 # Route to delete a resume
 @app.route('/delete_resume/<int:id>')
