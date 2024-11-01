@@ -57,7 +57,8 @@ function Dashboard() {
           website: "",
           contact: "",
           location: "",
-          summary: ""
+          summary: "",
+          institution: ""
         }),
       });
   

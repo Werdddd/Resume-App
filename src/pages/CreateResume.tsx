@@ -381,7 +381,7 @@ function CreateResume() {
         setLeaderships(updatedLeaderships);
     };
 
-    const saveAllChanges = async (id: number, name: string, headline: string, email: string, website: string, contact: number, location: string, summary: string) => {
+    const saveAllChanges = async (id: number, name: string, headline: string, email: string, website: string, contact: number, location: string, summary: string, institution: string) => {
 
         try {
           const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
@@ -397,6 +397,7 @@ function CreateResume() {
               contact: contact,
               location: location,
               summary: summary,
+              institution: institution,
             }),
           });
       
@@ -982,7 +983,7 @@ function CreateResume() {
                         </Modal>
 
                         <hr></hr>
-                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, contact, location, summary)}>Save All Changes</div>
+                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, contact, location, summary, institution)}>Save All Changes</div>
                         <div className="exportButton py-2 mb-4" onClick={exportToPDF}>Export to PDF</div>
                     </Form>
 

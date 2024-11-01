@@ -28,8 +28,9 @@ class Resume(db.Model):
     contact = db.Column(db.Integer, nullable=True)
     location = db.Column(db.String(100), nullable=True)
     summary = db.Column(db.String(100), nullable=True)
+    institution = db.Column(db.String(100), nullable=True)
 
-    def __init__(self, title, template, name=None, headline=None, email=None, website=None, contact=None, location=None, summary=None):
+    def __init__(self, title, template, name=None, headline=None, email=None, website=None, contact=None, location=None, summary=None, institution=None):
         self.title = title
         self.template = template
         self.name = name
@@ -38,7 +39,8 @@ class Resume(db.Model):
         self.website = website
         self.contact = contact
         self.location = location
-        self.summary = location
+        self.summary = summary
+        self.institution = institution
 
 # Create the database and table if it doesn’t exist
 with app.app_context():
@@ -76,11 +78,12 @@ def api_add_resume():
     contact = data.get('contact')
     location = data.get('location')
     summary = data.get('summary')
+    institution = data.get('institution')
     
     if not title or not template:
         return jsonify({"error": "Title and template are required"}), 400
 
-    new_resume = Resume(title=title, template=template, name=name, headline=headline, email=email, website=website, contact=contact, location=location, summary=summary)
+    new_resume = Resume(title=title, template=template, name=name, headline=headline, email=email, website=website, contact=contact, location=location, summary=summary, institution=institution)
     db.session.add(new_resume)
     db.session.commit()
 
@@ -97,6 +100,7 @@ def update_resume(id):
     contact = data.get('contact')
     location = data.get('location')
     summary = data.get('summary')
+    institution = data.get('institution')
 
     if not name:
         return jsonify({"error": "Name is required to update"}), 400
@@ -114,6 +118,7 @@ def update_resume(id):
     resume.contact = contact
     resume.location = location
     resume.summary = summary
+    resume.institution = institution
 
     db.session.commit()
 
@@ -127,7 +132,8 @@ def update_resume(id):
         "website": resume.website,
         "contact": resume.contact,
         "location": resume.location,
-        "summary": resume.summary
+        "summary": resume.summary,
+        "institution": resume.institution
     }), 200
 
 # Route to delete a resume
@@ -157,6 +163,7 @@ def get_resume_by_id(resume_id):
             "contact": resume.contact,
             "location": resume.location,
             "summary": resume.summary,
+            "institution": resume.institution,
             "education": resume.education,  # Make sure this returns a list of objects if it's a relationship
             "experiences": resume.experiences,  # Same for experiences
             "skills": resume.skills,
