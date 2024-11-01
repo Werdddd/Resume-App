@@ -49,7 +49,7 @@ function CreateResume() {
     const [headline, setHeadline] = useState('');
     const [email, setEmail] = useState('');
     const [website, setWebsite] = useState('');
-    const [contact, setContact] = useState('');
+    const [contact, setContact] = useState<number | undefined>(undefined);
     const [location, setLocation] = useState('');
     const [summary, setSummary] = useState('');
 
@@ -498,10 +498,10 @@ function CreateResume() {
                                 <Form.Group className="mb-3" controlId="formBasicContact">
                                     <Form.Label>Contact No.</Form.Label>
                                     <Form.Control 
-                                        type="text" 
+                                        type="number" 
                                         placeholder="Enter Contact No." 
-                                        value={contact} 
-                                        onChange={(e) => setContact(e.target.value)} 
+                                        value={contact || ''} 
+                                        onChange={(e) => setContact(Number(e.target.value))} 
                                     />
                                 </Form.Group>
                             </Col>
@@ -983,7 +983,7 @@ function CreateResume() {
                         </Modal>
 
                         <hr></hr>
-                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, contact, location, summary, institution)}>Save All Changes</div>
+                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, Number(contact), location, summary, institution)}>Save All Changes</div>
                         <div className="exportButton py-2 mb-4" onClick={exportToPDF}>Export to PDF</div>
                     </Form>
 
