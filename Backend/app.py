@@ -4,13 +4,16 @@ from flask_cors import CORS
 import pymysql
 from flask import render_template
 
+# Global database name
+DB_NAME = 'resumes_andrew_db'
+
 app = Flask(__name__)
 CORS(app)
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 # Configure MySQL Database Connection
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/resumes_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -55,7 +58,7 @@ def init_db():
         pymysql.connect(host='localhost',
                        user='root',
                        password='',
-                       database='resumes_db')
+                       database=DB_NAME)
     except pymysql.err.OperationalError as e:
         if e.args[0] == 1049:  # Database doesn't exist error code
             # Connect without database selected
@@ -64,7 +67,7 @@ def init_db():
                                  password='')
             cursor = conn.cursor()
             # Create database
-            cursor.execute('CREATE DATABASE IF NOT EXISTS resumes_db')
+            cursor.execute(f'CREATE DATABASE IF NOT EXISTS {DB_NAME}')
             conn.commit()
             cursor.close()
             conn.close()
