@@ -6,9 +6,12 @@ interface NavBarProps {
   brandName: string;
   imageSrcPath: string;
   navItems: { text: string; href: string }[];
+  isAuthenticated?: boolean;
+  user?: any;
+  onLogout?: () => void;
 }
 
-function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
+function NavBar({ brandName, imageSrcPath, navItems, isAuthenticated = false, user, onLogout }: NavBarProps) {
   const location = useLocation(); // Get the current location
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
@@ -21,7 +24,7 @@ function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
   return (
     <nav className="navbar navbar-expand-md navbar-light bg-white shadow">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/home"> 
+        <Link className="navbar-brand" to="/"> 
           <img
             src={imageSrcPath}
             width="60"
@@ -64,6 +67,28 @@ function NavBar({ brandName, imageSrcPath, navItems }: NavBarProps) {
                 </Link>
               </li>
             ))}
+            
+            {/* Authentication section */}
+            <li className="nav-item">
+              {isAuthenticated ? (
+                <div className="d-flex align-items-center">
+                  <div className="vr" style={{width: '2px', backgroundColor: '#000', marginRight: '10px', marginLeft: '10px'}}></div>
+                  <span className="nav-link welcome-text fw-bold me-3" style={{color: '#06402B'}}>
+                    Welcome, {user?.username}!
+                  </span>
+                  <button
+                    className="btn logoutBtn btn-sm"
+                    onClick={onLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link className="loginNavbar btn px-3" to="/login">
+                  Login
+                </Link>
+              )}
+            </li>
           </ul>
         </div>
       </div>

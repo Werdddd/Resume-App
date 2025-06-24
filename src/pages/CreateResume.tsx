@@ -399,10 +399,12 @@ function CreateResume() {
         profilePhoto: string | ArrayBuffer | null
       ) => {
         try {
+          const token = localStorage.getItem('token');
           const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
               name,
@@ -438,15 +440,45 @@ function CreateResume() {
     const exportToPDF = () => {
         const input = resumeRef.current;
         if (input) {
-            html2canvas(input)
-                .then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    pdf.save('resume.pdf');
+            html2canvas(input, { scale: 2 }).then(canvas => {
+                // Letter size in inches
+                const pdfWidth = 8.5;
+                const pdfHeight = 11;
+                const margin = 0.5; // inches
+
+                // Get image data
+                const imgData = canvas.toDataURL('image/png');
+
+                // Calculate image dimensions in inches
+                const imgWidth = (canvas.width / 96); // 96 dpi is default for html2canvas
+                const imgHeight = (canvas.height / 96);
+
+                // Calculate scale to fit within PDF (accounting for margins)
+                const maxWidth = pdfWidth - 2 * margin;
+                const maxHeight = pdfHeight - 2 * margin;
+                let renderWidth = imgWidth;
+                let renderHeight = imgHeight;
+
+                const widthScale = maxWidth / imgWidth;
+                const heightScale = maxHeight / imgHeight;
+                const scale = Math.min(widthScale, heightScale, 1);
+
+                renderWidth = imgWidth * scale;
+                renderHeight = imgHeight * scale;
+
+                // Create PDF
+                const pdf = new jsPDF({
+                    unit: 'in',
+                    format: 'letter'
                 });
+
+                // Align to top (not center)
+                const x = (pdfWidth - renderWidth) / 2;
+                const y = margin; // Always start at the top margin
+
+                pdf.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
+                pdf.save('resume.pdf');
+            });
         }
     };
     
@@ -455,7 +487,12 @@ function CreateResume() {
         if (resumeId) {
             const loadResumeData = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/resumes/${resumeId}`);
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://localhost:5000/api/resumes/${resumeId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
                     if (response.ok) {
                         const data = await response.json();
                         console.log('Loaded resume data:', data); // Debug log
@@ -1055,35 +1092,37 @@ function CreateResume() {
                     <div className="resumeDisplay align-items-center p-5" ref={resumeRef}>
                         <div className="text-center"
                         style={fullName ? { borderBottom: '1px solid black', marginBottom: '10px' } : {}}>
-                             {/* Display Profile Photo - only show when photo exists */}
-                             {profilePhoto && <img src={profilePhoto as string} alt="Profile" className="profilePhoto" />}
+                            {/* Only render the image and its margin if profilePhoto exists */}
+                            {profilePhoto && (
+                                <div style={{ marginBottom: '10px' }}>
+                                    <img src={profilePhoto as string} alt="Profile" className="profilePhoto" />
+                                </div>
+                            )}
                             {fullName && <h5>{fullName}</h5>}
                             {headline && <p>{headline}</p>}
-                            <Row style={{fontSize : '12px'}}>
-                                <Col>
+                            <Row style={{ fontSize: '12px', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', marginBottom: '15px' }}>
                                 {email && (
-                                    <Col><p><FaAt /> {email}</p></Col>
+                                    <Col style={{ whiteSpace: 'nowrap', flex: '1 1 auto', textAlign: 'center' }}>
+                                    <p style={{ margin: 0 }}><FaAt /> {email}</p>
+                                    </Col>
                                 )}
-                                </Col>
-                                <Col>
                                 {website && (
-                                    <Col><p><FaLink /> {website}</p></Col>
+                                    <Col style={{ whiteSpace: 'nowrap', flex: '1 1 auto', textAlign: 'center' }}>
+                                    <p style={{ margin: 0 }}><FaLink /> {website}</p>
+                                    </Col>
                                 )}
-                                </Col>
-                                <Col>
                                 {contact && (
-                                    <Col><p><FaPhoneAlt /> {contact}</p></Col>
+                                    <Col style={{ whiteSpace: 'nowrap', flex: '1 1 auto', textAlign: 'center' }}>
+                                    <p style={{ margin: 0 }}><FaPhoneAlt /> {contact}</p>
+                                    </Col>
                                 )}
-                                </Col>
-                                <Col>
                                 {location && (
-                                    <Col><p><FaMapPin /> {location}</p></Col>
+                                    <Col style={{ whiteSpace: 'nowrap', flex: '1 1 auto', textAlign: 'center' }}>
+                                    <p style={{ margin: 0 }}><FaMapPin /> {location}</p>
+                                    </Col>
                                 )}
-                                </Col>
-                                
-                                
-                                
-                            </Row>
+                                </Row>
+
                         </div>
                       
 

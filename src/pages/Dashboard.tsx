@@ -1,20 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Container, Row, Col, Modal } from 'react-bootstrap';
-import { BsPlusLg, BsFileEarmarkText } from "react-icons/bs";
+import { BsPlusLg, BsFileEarmarkText, BsGear, BsPerson, BsGrid, BsX } from "react-icons/bs";
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
+import { useAuth } from '../App';
 import '../App.css';
 
 function Dashboard() {
   const [activeItem, setActiveItem] = useState('dashboard');
+  const [collapsed, setCollapsed] = useState(true);
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [resumeTitle, setResumeTitle] = useState('');
   const [resumeTemplate, setResumeTemplate] = useState('');
-  const [resumes, setResumes] = useState([]);
+  const [resumes, setResumes] = useState<any[]>([]);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleItemClick = (item: string) => setActiveItem(item);
   const handleCloseResume = () => setShowResumeModal(false);
@@ -25,85 +28,81 @@ function Dashboard() {
 
   const fetchResumes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/resumes');
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/resumes', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await response.json();
-      setResumes(data);  // Update the resumes state with the fetched data
+      setResumes(data);
     } catch (error) {
       console.error('Failed to fetch resumes:', error);
     }
   };
-  
 
   useEffect(() => {
-    fetchResumes();  // Fetch resumes from the database on component mount
+    fetchResumes();
   }, []);
-  
+
   const handleSubmit = async () => {
-    if (!resumeTitle || !resumeTemplate) {
-      alert("Please fill in both the title and template");
-      return;
-    }
-  
+    if (!resumeTitle || !resumeTemplate) return alert("Fill in title and template");
+
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5000/api/resumes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           title: resumeTitle,
           template: resumeTemplate,
-          name: "",
-          headline: "",
-          email: "",
-          website: "",
-          contact: "",
-          location: "",
-          summary: "",
-          institution: ""
+          name: "", headline: "", email: "", website: "",
+          contact: "", location: "", summary: "", institution: ""
         }),
       });
-  
+
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-  
       const newResume = await response.json();
-      console.log('Resume added successfully:', newResume);
-  
-      // Add the new resume directly to the resumes state
-      setResumes((prevResumes) => [...prevResumes, newResume]);
-  
-      // Reset form fields and close modal
-      setResumeTitle('');
-      setResumeTemplate('');
-      handleCloseResume();
-  
-      // Redirect to the created resume page
+      setResumes(prev => [...prev, newResume]);
+      setResumeTitle(''); setResumeTemplate(''); handleCloseResume();
       handleCreateResumeClick(newResume.id);
     } catch (error) {
       console.error('Failed to add resume:', error);
     }
   };
-  
 
+  const handleCreateResumeClick = (resumeId: number) => navigate('/resume', { state: { resumeId } });
+
+  const handleDelete = (id: number) => {
+    setResumes(prev => prev.filter(resume => resume.id !== id));
+    // You can also trigger backend delete here
+  };
 
   const renderContent = () => {
     switch (activeItem) {
       case 'dashboard':
         return (
-          <Row className='px-2 dashboardrow'>
+          <Row className='dashboardrow'>
             <Col lg={3} md={4} xs={12} className='mb-4'>
-              <div className='vertical-card' onClick={handleShowResume}>
-                <div className='icon-container'>
-                  <span className="material-icons add-icon"><BsPlusLg /></span>
-                </div>
+              <div className='vertical-card create-card' onClick={handleShowResume}>
+                <div className='icon-container'><BsPlusLg size={36} /></div>
                 <p className='subtitle'>Create a new Resume</p>
               </div>
             </Col>
-
-            {/* Render all resumes from the database */}
             {resumes.map((resume) => (
               <Col key={resume.id} lg={3} md={4} xs={12} className='mb-4'>
-                <div className='vertical-card' onClick={() => navigate('/resume', { state: { resumeId: resume.id } })}>
+                <div
+                  className='vertical-card position-relative'
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleCreateResumeClick(resume.id)}
+                >
+                  <span
+                    style={{ position: 'absolute', top: 10, right: 10, zIndex: 2, color: '#ac0101', cursor: 'pointer' }}
+                    onClick={e => { e.stopPropagation(); handleDelete(resume.id); }}
+                    title="Delete"
+                  >
+                    <BsX size={24} />
+                  </span>
                   <div className='icon-container'>
-                    <span className="material-icons add-icon"><BsFileEarmarkText /></span>
+                    <BsFileEarmarkText size={36} />
                   </div>
                   <p className='resumetitle'>{resume.title}</p>
                 </div>
@@ -111,55 +110,52 @@ function Dashboard() {
             ))}
           </Row>
         );
-      case 'settings':
-        return <p>Settings content goes here</p>;
-      case 'profile':
-        return <p>Profile content goes here</p>;
-      case 'logout':
-        return <p>Logout content goes here</p>;
-      default:
-        return null;
+      case 'settings': return <p>Settings content goes here</p>;
+      case 'profile': return <p>Profile content goes here</p>;
+      default: return null;
     }
   };
 
   return (
     <Container fluid className='dashboard'>
-      <Row className="dashrow">
-        <Col className='accountCol' xs={12} md={3}>
-          <div className={`sidebar-item my-3 ${activeItem === 'dashboard' ? 'active' : ''}`} onClick={() => handleItemClick('dashboard')}>
-            <div className='sidebar-header'>Dashboard</div>
+      <div className="dashrow d-flex">
+        <div
+          className={`accountCol ${collapsed ? 'collapsed' : 'expanded'}`}
+          onMouseEnter={() => setCollapsed(false)}
+          onMouseLeave={() => setCollapsed(true)}
+        >
+          <div className={`sidebar-item my-4 ${activeItem === 'dashboard' ? 'active' : ''}`} onClick={() => handleItemClick('dashboard')}>
+            <BsGrid size={20} />
+            {!collapsed && <span className='sidebar-label'>Dashboard</span>}
           </div>
-          <div className={`sidebar-item my-3 ${activeItem === 'settings' ? 'active' : ''}`} onClick={() => handleItemClick('settings')}>
-            <div className='sidebar-header'>Settings</div>
+          <div className={`sidebar-item my-4 ${activeItem === 'settings' ? 'active' : ''}`} onClick={() => handleItemClick('settings')}>
+            <BsGear size={20} />
+            {!collapsed && <span className='sidebar-label'>Settings</span>}
           </div>
-          <div className={`sidebar-item my-3 ${activeItem === 'profile' ? 'active' : ''}`} onClick={() => handleItemClick('profile')}>
-            <div className='sidebar-header'>Profile</div>
+          <div className={`sidebar-item my-4 ${activeItem === 'profile' ? 'active' : ''}`} onClick={() => handleItemClick('profile')}>
+            <BsPerson size={20} />
+            {!collapsed && <span className='sidebar-label'>Profile</span>}
           </div>
-          <div className={`sidebar-item my-3 ${activeItem === 'logout' ? 'active' : ''}`} onClick={() => handleItemClick('logout')}>
-            <div className='sidebar-header'>Logout</div>
-          </div>
-        </Col>
+        </div>
 
-        <Col className='dashboardCol' xs={12} md={9}>
+        <div className="dashboardCol flex-grow-1">
           {renderContent()}
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       <Modal show={showResumeModal} onHide={handleCloseResume}>
-        <Modal.Header closeButton>
-          <Modal.Title>+ Create a New Resume</Modal.Title>
-        </Modal.Header>
+        <Modal.Header closeButton><Modal.Title>+ Create a New Resume</Modal.Title></Modal.Header>
         <Modal.Body>
           <FloatingLabel controlId="floatingInput" label="Resume Name" className="mb-3">
             <Form.Control type="text" placeholder="Name" value={resumeTitle} onChange={handleTitleChange} />
           </FloatingLabel>
-          <Form.Select className='py-3' aria-label="Default select example" value={resumeTemplate} onChange={handleTemplateChange}>
+          <Form.Select className='py-3' value={resumeTemplate} onChange={handleTemplateChange}>
             <option>Choose Template</option>
             <option value="Professional">Professional</option>
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
-          <div className="editDelItem py-2" onClick={handleSubmit}>Create</div>
+          <button className="btn btn-success" onClick={handleSubmit}>Create</button>
         </Modal.Footer>
       </Modal>
     </Container>
