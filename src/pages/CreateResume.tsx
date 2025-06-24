@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas"; // For converting HTML to image
 import Container from 'react-bootstrap/Container';
@@ -49,7 +49,7 @@ function CreateResume() {
     const [headline, setHeadline] = useState('');
     const [email, setEmail] = useState('');
     const [website, setWebsite] = useState('');
-    const [contact, setContact] = useState<number | undefined>(undefined);
+    const [contact, setContact] = useState<string>('');
     const [location, setLocation] = useState('');
     const [summary, setSummary] = useState('');
 
@@ -69,7 +69,7 @@ function CreateResume() {
     };
 
     // Education states
-    const [education, setEducation] = useState([]);
+    const [education, setEducation] = useState<any[]>([]);
     const [institution, setInstitution] = useState('');
     const [educLocation, setEducLocation] = useState('');
     const [educCourse, setEducCourse] = useState('');
@@ -135,7 +135,7 @@ function CreateResume() {
     };
 
     // Experience states
-    const [experiences, setExperiences] = useState([]);
+    const [experiences, setExperiences] = useState<any[]>([]);
     const [company, setCompany] = useState('');
     const [companyPosition, setCompanyPosition] = useState('');
     const [companyDateRange, setCompanyDateRange] = useState('');
@@ -201,7 +201,7 @@ function CreateResume() {
     };
 
     // Skill states
-    const [skills, setSkills] = useState([]);
+    const [skills, setSkills] = useState<any[]>([]);
     const [skillCategory, setSkillCategory] = useState('');
     const [skillName, setSkillName] = useState('');
     const [skillDesc, setSkillDesc] = useState('');
@@ -259,7 +259,7 @@ function CreateResume() {
     };
 
     // Project states
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState<any[]>([]);
     const [projectName, setProjectName] = useState('');
     const [projectDate, setProjectDate] = useState('');
     const [projectDesc, setProjectDesc] = useState('');
@@ -317,7 +317,7 @@ function CreateResume() {
     };
 
     // Leadership states
-    const [leaderships, setLeaderships] = useState([]);
+    const [leaderships, setLeaderships] = useState<any[]>([]);
     const [orgName, setOrgName] = useState('');
     const [orgPosition, setOrgPosition] = useState('');
     const [orgDate, setOrgDate] = useState('');
@@ -381,8 +381,23 @@ function CreateResume() {
         setLeaderships(updatedLeaderships);
     };
 
-    const saveAllChanges = async (id: number, name: string, headline: string, email: string, website: string, contact: number, location: string, summary: string, institution: string) => {
-
+    const saveAllChanges = async (
+        id: number,
+        name: string,
+        headline: string,
+        email: string,
+        website: string,
+        contact: string,
+        location: string,
+        summary: string,
+        institution: string,
+        education: any[],
+        experiences: any[],
+        skills: any[],
+        projects: any[],
+        leaderships: any[],
+        profilePhoto: string | ArrayBuffer | null
+      ) => {
         try {
           const response = await fetch(`http://localhost:5000/api/resumes/${id}`, {
             method: 'PUT',
@@ -390,14 +405,20 @@ function CreateResume() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              name: name,
-              headline: headline,
-              email: email,
-              website: website,
-              contact: contact,
-              location: location,
-              summary: summary,
-              institution: institution,
+              name,
+              headline,
+              email,
+              website,
+              contact,
+              location,
+              summary,
+              institution,
+              education,
+              experiences,
+              skills,
+              projects,
+              leaderships,
+              profilePhoto
             }),
           });
       
@@ -411,6 +432,7 @@ function CreateResume() {
           console.error('Failed to update resume:', error);
         }
       };
+      
       
     // PDF export function
     const exportToPDF = () => {
@@ -428,6 +450,38 @@ function CreateResume() {
         }
     };
     
+    // Load existing resume data when component mounts
+    useEffect(() => {
+        if (resumeId) {
+            const loadResumeData = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/resumes/${resumeId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Loaded resume data:', data); // Debug log
+                        setFullName(data.name || '');
+                        setHeadline(data.headline || '');
+                        setEmail(data.email || '');
+                        setWebsite(data.website || '');
+                        setContact(data.contact || '');
+                        setLocation(data.location || '');
+                        setSummary(data.summary || '');
+                        setInstitution(data.institution || '');
+                        setEducation(data.education || []);
+                        setExperiences(data.experiences || []);
+                        setSkills(data.skills || []);
+                        setProjects(data.projects || []);
+                        setLeaderships(data.leaderships || []);
+                        console.log('Setting profile photo:', data.profilePhoto); // Debug log
+                        setProfilePhoto(data.profilePhoto || null);
+                    }
+                } catch (error) {
+                    console.error('Failed to load resume data:', error);
+                }
+            };
+            loadResumeData();
+        }
+    }, [resumeId]);
 
     return (
         <Container fluid className='createResumePage'>
@@ -498,10 +552,10 @@ function CreateResume() {
                                 <Form.Group className="mb-3" controlId="formBasicContact">
                                     <Form.Label>Contact No.</Form.Label>
                                     <Form.Control 
-                                        type="number" 
+                                        type="text" 
                                         placeholder="Enter Contact No." 
-                                        value={contact || ''} 
-                                        onChange={(e) => setContact(Number(e.target.value))} 
+                                        value={contact} 
+                                        onChange={(e) => setContact(e.target.value)} 
                                     />
                                 </Form.Group>
                             </Col>
@@ -983,7 +1037,7 @@ function CreateResume() {
                         </Modal>
 
                         <hr></hr>
-                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, Number(contact), location, summary, institution)}>Save All Changes</div>
+                        <div className="exportButton py-2 mb-4" onClick={() => saveAllChanges(resumeId, fullName, headline, email, website, contact, location, summary, institution, education, experiences, skills, projects, leaderships, profilePhoto)}>Save All Changes</div>
                         <div className="exportButton py-2 mb-4" onClick={exportToPDF}>Export to PDF</div>
                     </Form>
 
@@ -1001,7 +1055,7 @@ function CreateResume() {
                     <div className="resumeDisplay align-items-center p-5" ref={resumeRef}>
                         <div className="text-center"
                         style={fullName ? { borderBottom: '1px solid black', marginBottom: '10px' } : {}}>
-                             {/* Display Profile Photo */}
+                             {/* Display Profile Photo - only show when photo exists */}
                              {profilePhoto && <img src={profilePhoto as string} alt="Profile" className="profilePhoto" />}
                             {fullName && <h5>{fullName}</h5>}
                             {headline && <p>{headline}</p>}

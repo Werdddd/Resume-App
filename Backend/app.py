@@ -5,7 +5,8 @@ import pymysql
 from flask import render_template
 
 # Global database name
-DB_NAME = 'resumes_andrew_db'
+DB_NAME = 'resume_app_db'
+
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +22,7 @@ db = SQLAlchemy(app)
 
 # Define a Resume Model (Table)
 class Resume(db.Model):
+    __tablename__ = 'resume'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     template = db.Column(db.String(100), nullable=False)
@@ -28,18 +30,17 @@ class Resume(db.Model):
     headline = db.Column(db.String(300), nullable=True)
     email = db.Column(db.String(100), nullable=True)
     website = db.Column(db.String(100), nullable=True)
-    contact = db.Column(db.Integer, nullable=True)
+    contact = db.Column(db.String(20), nullable=True)  # Changed to String to allow leading zeros
     location = db.Column(db.String(100), nullable=True)
     summary = db.Column(db.Text, nullable=True)  # Changed to Text for longer content
-    institution = db.Column(db.Text, nullable=True)  # Changed to Text for longer content
-    profile_photo = db.Column(db.String(500), nullable=True)  # Added for profile photo URL
+    profile_photo = db.Column(db.Text, nullable=True)  # Changed to Text for longer base64 image data
     education = db.Column(db.JSON, nullable=True)  # Added for education list
     experiences = db.Column(db.JSON, nullable=True)  # Added for experiences list  
     skills = db.Column(db.JSON, nullable=True)  # Added for skills list
     projects = db.Column(db.JSON, nullable=True)  # Added for projects list
     leaderships = db.Column(db.JSON, nullable=True)  # Added for leaderships list
 
-    def __init__(self, title, template, name=None, headline=None, email=None, website=None, contact=None, location=None, summary=None, institution=None):
+    def __init__(self, title, template, name=None, headline=None, email=None, website=None, contact=None, location=None, summary=None, education=None, experiences=None, skills=None, projects=None, leaderships=None, profile_photo=None):
         self.title = title
         self.template = template
         self.name = name
@@ -49,7 +50,12 @@ class Resume(db.Model):
         self.contact = contact
         self.location = location
         self.summary = summary
-        self.institution = institution
+        self.education = education
+        self.experiences = experiences
+        self.skills = skills
+        self.projects = projects
+        self.leaderships = leaderships
+        self.profile_photo = profile_photo
 
 # Create database if it doesn't exist
 def init_db():
@@ -75,7 +81,9 @@ def init_db():
 # Initialize database and tables
 with app.app_context():
     init_db()
-    db.create_all()
+    db.drop_all()      # Temporarily drop all tables to recreate with new column type
+    db.create_all()    # Create tables if they don't exist
+
 
 # API Route to get all resumes
 @app.route('/api/resumes', methods=['GET'])
@@ -103,12 +111,34 @@ def api_add_resume():
     contact = data.get('contact')
     location = data.get('location')
     summary = data.get('summary')
-    institution = data.get('institution')
+    education = data.get('education')
+    experiences = data.get('experiences')
+    skills = data.get('skills')
+    projects = data.get('projects')
+    leaderships = data.get('leaderships')
+    profile_photo = data.get('profilePhoto')
+
     
     if not title or not template:
         return jsonify({"error": "Title and template are required"}), 400
 
-    new_resume = Resume(title=title, template=template, name=name, headline=headline, email=email, website=website, contact=contact, location=location, summary=summary, institution=institution)
+    new_resume = Resume(
+        title=title, 
+        template=template, 
+        name=name, 
+        headline=headline, 
+        email=email, 
+        website=website, 
+        contact=contact, 
+        location=location, 
+        summary=summary, 
+        education=education,
+        experiences=experiences,
+        skills=skills,
+        projects=projects,
+        leaderships=leaderships,
+        profile_photo=profile_photo
+    )
     db.session.add(new_resume)
     db.session.commit()
 
@@ -124,7 +154,14 @@ def update_resume(id):
     contact = data.get('contact')
     location = data.get('location')
     summary = data.get('summary')
-    institution = data.get('institution')
+    education = data.get('education')
+    experiences = data.get('experiences')
+    skills = data.get('skills')
+    projects = data.get('projects')
+    leaderships = data.get('leaderships')
+    profile_photo = data.get('profilePhoto')
+
+    print(f"Received profile photo data: {profile_photo[:100] if profile_photo else 'None'}...")  # Debug log
 
     if not name:
         return jsonify({"error": "Name is required to update"}), 400
@@ -134,7 +171,7 @@ def update_resume(id):
     if not resume:
         return jsonify({"error": "Resume not found"}), 404
 
-    # Update the resume's name
+    # Update the resume's fields
     resume.name = name
     resume.headline = headline
     resume.email = email
@@ -142,7 +179,14 @@ def update_resume(id):
     resume.contact = contact
     resume.location = location
     resume.summary = summary
-    resume.institution = institution
+    resume.education = education
+    resume.experiences = experiences
+    resume.skills = skills
+    resume.projects = projects
+    resume.leaderships = leaderships
+    resume.profile_photo = profile_photo
+
+    print(f"Saving profile photo: {resume.profile_photo[:100] if resume.profile_photo else 'None'}...")  # Debug log
 
     db.session.commit()
 
@@ -157,7 +201,12 @@ def update_resume(id):
         "contact": resume.contact,
         "location": resume.location,
         "summary": resume.summary,
-        "institution": resume.institution
+        "education": resume.education,
+        "experiences": resume.experiences,
+        "skills": resume.skills,
+        "projects": resume.projects,
+        "leaderships": resume.leaderships,
+        "profilePhoto": resume.profile_photo
     }), 200
 
 # Route to delete a resume
@@ -178,6 +227,8 @@ def get_resume_by_id(resume_id):
         if not resume:
             return jsonify({"error": "Resume not found"}), 404
         
+        print(f"Retrieved profile photo: {resume.profile_photo[:100] if resume.profile_photo else 'None'}...")  # Debug log
+        
         # Create a dictionary with all the fields needed
         resume_data = {
             "id": resume.id,
@@ -191,7 +242,6 @@ def get_resume_by_id(resume_id):
             "contact": resume.contact,
             "location": resume.location,
             "summary": resume.summary,
-            "institution": resume.institution,
             "education": resume.education,
             "experiences": resume.experiences,
             "skills": resume.skills,
